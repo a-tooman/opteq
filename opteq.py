@@ -1,7 +1,7 @@
 # ####################################
 #   author: Anthony Tooman
-#   date:   202012
-#   desc:   opteq-0.02
+#   date:   202012, 202111
+#   desc:   opteq
 # ####################################
 
 
@@ -18,26 +18,25 @@ import opteq.hurst as opthurst
 import opteq.polyfit as optfit
 
 PATHREL = 'py/equity/opteq/data/'
-    
-if __name__ == "__main__":
-    SYMBOL = sys.argv[1]
-    PATHDATA = sys.argv[2]
+SYMBOL = '^GSPC'
+PATHDATA = 'Users/anthony/Google Drive/opteq/data'
 
-    # get s&p 500 (spx) data
-    periods=[13*5, 26*5, 52*5]
-    periodsgrp=[13*5, 26*5]
-    obsin=5*52*4
-    obsout=252
+# get s&p 500 (spx) data
+periods=[13*5, 26*5, 52*5]
+periodsgrp=[13*5, 26*5]
+obsin=5*52*4
+obsout=252
 
-    prd1=1
-    prd2=2
-    prd3=3
-    prd5=5
-    prd130=5*26
-    prd252=252
+prd1=1
+prd2=2
+prd3=3
+prd5=5
+prd130=5*26
+prd252=252
 
-    quants = [0.01, 0.02, 0.03, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50, 0.70, 0.80, 0.85, 0.90, 0.95, 0.97, 0.98, 0.99]
+quants = [0.01, 0.02, 0.03, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50, 0.70, 0.80, 0.85, 0.90, 0.95, 0.97, 0.98, 0.99]
 
+def main():
     # underlying symbol
     under = optinst.stock(_symbol=SYMBOL, _obsin=obsin, _obsout=obsout, _path=PATHDATA)
     under.getdaily()
@@ -111,3 +110,11 @@ if __name__ == "__main__":
         , _group=[f'{underrtn.getgrp()}desc', f'{runner.getgrp()}desc', under.getgrp(), rtn.getgrp(), runner.getgrp(), underrtn.getgrp()]
         , _df=[underrtn.dfdesc, runner.dfdesc, under.getdf(), rtn.getdf(), runner.getdf(), underrtn.getdf()]
         , _prd=[obsout, obsout, obsout, obsout, obsout, obsout])
+    return
+
+if __name__ == "__main__":
+    '''
+    SYMBOL = sys.argv[1]
+    PATHDATA = sys.argv[2]
+    '''
+    main()

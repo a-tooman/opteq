@@ -6,15 +6,11 @@
 
 
 import pandas as pd
-
-
 import requests
 import os
 
-
 class alphavan(object):
     BASE_URL = 'https://www.alphavantage.co/query?'
-
 
 class iex(object):
     '''
@@ -60,19 +56,18 @@ class iex(object):
         self.df.index = self.df['date']
         return
 
-
-class yahoo(object):
+class yahoofin(object):
     PROVIDER = 'yahoofin'
-    BASE_URL = 'https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance'
-    HOST_URL = 'yahoo-finance-low-latency.p.rapidapi.com'
-    TOKEN = os.environ.get('RAPID_TOKEN')
+    BASE_URL = 'https://yfapi.net/v6/finance/'
+    HOST_URL = None
+    TOKEN = os.environ.get('YAHOOFIN_TOKEN')
     TYPEMAP = {'open':'float64', 'high':'float64', 'low':'float64', 'close':'float64', 'adjclose':'float64', 'volume':'int'}
     PARSEDATES = None #['date']
 
     def __init__(self):
         return
 
-    def getdaily(self, _symbol='TSLA', _region='US', _obsin='252d', _scale=1.0):
+    def getdaily(self, _symbol='^GSPC', _region='US', _interval='1d', _obsin='252d', _events='div,split', _scale=1.0):
         '''
         endppoint:  chart
         desc:       get historical daily data
@@ -81,19 +76,20 @@ class yahoo(object):
                     close and adjclose include extended trading hours
         '''
         headers = {
-                    'x-rapidapi-key': self.TOKEN
-                    ,'x-rapidapi-host': self.HOST_URL
+                    'x-api-key': self.TOKEN
                     }
         params = {
-                    "interval":"1d"
+                    "interval":_interval
                     ,"range":_obsin
                     ,"region":_region
-                    ,"events":"div,split"
+                    ,"events":_events
                     }
         endpoint = f'{self.BASE_URL}/chart/{_symbol}'
 
         try:
             resp = requests.get(endpoint, headers=headers, params=params)
+            print(resp)
+            '''
             # create DatetimeIndex
             idx = pd.to_datetime(resp.json()['chart']['result'][0]['timestamp'], errors='raise', unit='s', origin='unix').date
 
@@ -102,27 +98,28 @@ class yahoo(object):
             df = pd.concat([_scale*data, _scale*dataadj], axis=1)
 
             df.index = pd.DatetimeIndex(df.index)
-            print("datayahoo.getdaily df success")
+            print("data.yahoofin.getdaily df success")
+            '''
         except:
             df = None
-            print("datayahoo.getdaily failed")
+            print("data.yahoofin.getdaily failed")
         finally:
             return df
 
-    def writedaily(self, _df, _symbol='TSLA', _path='py/equity/data/'):
+    def writedaily(self, _df, _symbol='^GSPC', _path='py/equity/data/'):
         '''
         desc:       write daily df to files
         '''
         try:
             file = f'{_path}{self.PROVIDER}-{_symbol}.csv'
             _df.to_csv(file)
-            print("datayahoo.write success ", file)
+            print("data.yahoofin.write success ", file)
         except:
-            print("datayahoo.write failed")
+            print("data.yahoofin.write failed")
         finally:
             return
 
-    def readdaily(self, _symbol='TSLA', _path='py/equity/data/', _typemap=TYPEMAP, _parsedates=PARSEDATES):
+    def readdaily(self, _symbol='^GSPC', _path='py/equity/data/', _typemap=TYPEMAP, _parsedates=PARSEDATES):
         '''
         desc:       read csv of daily data to df
         '''
@@ -130,13 +127,12 @@ class yahoo(object):
             file = f'{_path}{self.PROVIDER}-{_symbol}.csv'
             df = pd.read_csv(file, index_col=0, dtype=_typemap, parse_dates=_parsedates)
             df.index = pd.DatetimeIndex(df.index)
-            print("datayahoo.readdf success ", file)
+            print("data.yahoofin.readdf success ", file)
         except:
             df = None
-            print("datayahoo.readdf failed ", file)
+            print("data.yahoofin.readdf failed ", file)
         finally:
             return df
-
 
 def writexlsx(_file, _group, _df, _prd):
     '''

@@ -84,7 +84,7 @@ class stock(instrument):
     features = ['open', 'high', 'low', 'close', 'adjclose', 'volume']
     drop = []
 
-    def __init__(self, _dataprovider=optdata.yahoo(), _symbol='^GSPC', _region='US', _scale=1.0, _obsin=4*52*5, _obsout=252,  _path=PATHREL):
+    def __init__(self, _dataprovider=optdata.yahoofin(), _symbol='^GSPC', _region='US', _scale=1.0, _obsin=4*52*5, _obsout=252, _path=PATHREL):
         self.dataprovider = _dataprovider
         self.symbol = _symbol
         self.region = _region
@@ -110,7 +110,7 @@ class intrate(instrument):
     '''
     features=['close']
 
-    def __init__(self, _dataprovider=optdata.yahoo(), _symbol='^IRX', _region='US', _obsin=2*52*5, _obsout=252, _scale=0.01, _path=PATHREL):
+    def __init__(self, _dataprovider=optdata.yahoofin(), _symbol='^IRX', _region='US', _obsin=2*52*5, _obsout=252, _scale=0.01, _path=PATHREL):
         self.dataprovider = _dataprovider
         self.symbol = _symbol
         self.region = _region
@@ -131,7 +131,7 @@ class vix(instrument):
     '''
     features=['close', 'adjclose', 'volume']
 
-    def __init__(self, _dataprovider=optdata.yahoo(), _symbol='^VIX', _region='US', _obsin=2*52*5, _obsout=252, _scale=0.01, _path=PATHREL):
+    def __init__(self, _dataprovider=optdata.yahoofin(), _symbol='^VIX', _region='US', _obsin=2*52*5, _obsout=252, _scale=0.01, _path=PATHREL):
         self.dataprovider = _dataprovider
         self.symbol = _symbol
         self.region = _region
