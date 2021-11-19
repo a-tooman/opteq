@@ -9,87 +9,37 @@ import pandas as pd
 import requests
 import os
 
-class alphavan(object):
-    BASE_URL = 'https://www.alphavantage.co/query?'
-
-class iex(object):
-    '''
-    IEX limit on free account limited
-    '''
-    BASE_URL = 'https://cloud.iexapis.com/v1'
-    SANDBOX_URL = 'https://sandbox.iexapis.com/stable'
-    TOKEN = os.environ.get('IEX_TOKEN')
-
-    def __init__(self):
-        return
-
-    def getdaily(self, _symbol='TSLA', _period='1y'):
-        '''
-        endppoint:  #historical-prices
-        desc:       get historical daily data
-        '''
-        params = {'token':self.TOKEN}
-        endpoint = f'{self.BASE_URL}/stock/{_symbol}/chart/{_period}'
-        print(endpoint)
-        try:
-            resp = requests.get(endpoint, params=params)
-            self.df = pd.DataFrame(resp.json())
-            print("dataiex.getdaily df created")
-        except:
-            print("dataiex.getdaily failed")
-        finally:
-            return
-
-    def mapcolumns(self):
-        '''
-        notes:  model expects the column adjclose
-                IEX close = adjusted
-                IEX uclose = unadjusted
-        '''
-        self.df.rename(columns={'close':'adjclose', 'uClose':'close'}, inplace=True)
-        return
-
-    def setindex(self):
-        '''
-        notes:  model expects date column as index
-        '''
-        self.df.index = self.df['date']
-        return
-
 class yahoofin(object):
     PROVIDER = 'yahoofin'
-    BASE_URL = 'https://yfapi.net/v6/finance/'
     HOST_URL = None
+    PARSEDATES = None
     TOKEN = os.environ.get('YAHOOFIN_TOKEN')
-    TYPEMAP = {'open':'float64', 'high':'float64', 'low':'float64', 'close':'float64', 'adjclose':'float64', 'volume':'int'}
-    PARSEDATES = None #['date']
 
     def __init__(self):
         return
 
     def getdaily(self, _symbol='^GSPC', _region='US', _interval='1d', _obsin='252d', _events='div,split', _scale=1.0):
         '''
-        endppoint:  chart
+        endppoint:  chart (OHLC)
         desc:       get historical daily data
                     close is adjusted for splits
                     adjclose is adjusted for splits and dividends
                     close and adjclose include extended trading hours
         '''
+        base_url = 'https://yfapi.net/v8/finance'
+        endpoint = f'{base_url}/chart/{_symbol}'
         headers = {
                     'x-api-key': self.TOKEN
                     }
-        params = {
-                    "interval":_interval
-                    ,"range":_obsin
+        params = {"range":_obsin
                     ,"region":_region
+                    ,"interval":_interval
                     ,"events":_events
                     }
-        endpoint = f'{self.BASE_URL}/chart/{_symbol}'
 
         try:
             resp = requests.get(endpoint, headers=headers, params=params)
-            print(resp)
-            '''
+
             # create DatetimeIndex
             idx = pd.to_datetime(resp.json()['chart']['result'][0]['timestamp'], errors='raise', unit='s', origin='unix').date
 
@@ -99,7 +49,7 @@ class yahoofin(object):
 
             df.index = pd.DatetimeIndex(df.index)
             print("data.yahoofin.getdaily df success")
-            '''
+
         except:
             df = None
             print("data.yahoofin.getdaily failed")
@@ -115,17 +65,18 @@ class yahoofin(object):
             _df.to_csv(file)
             print("data.yahoofin.write success ", file)
         except:
-            print("data.yahoofin.write failed")
+            print("data.yahoofin.write failed", file)
         finally:
             return
 
-    def readdaily(self, _symbol='^GSPC', _path='py/equity/data/', _typemap=TYPEMAP, _parsedates=PARSEDATES):
+    def readdaily(self, _symbol='^GSPC', _path='py/equity/data/', _parsedates=PARSEDATES):
         '''
         desc:       read csv of daily data to df
         '''
         try:
+            typemap = {'open':'float64','high':'float64','low':'float64','close':'float64','adjclose':'float64', 'volume':'int'}
             file = f'{_path}{self.PROVIDER}-{_symbol}.csv'
-            df = pd.read_csv(file, index_col=0, dtype=_typemap, parse_dates=_parsedates)
+            df = pd.read_csv(file, index_col=0, dtype=typemap, parse_dates=_parsedates)
             df.index = pd.DatetimeIndex(df.index)
             print("data.yahoofin.readdf success ", file)
         except:

@@ -17,9 +17,9 @@ import opteq.data as optdata
 import opteq.hurst as opthurst
 import opteq.polyfit as optfit
 
-PATHREL = 'py/equity/opteq/data/'
+PATHREL = '/Users/anthony/Google Drive/dev/py/opteq/data'
 SYMBOL = '^GSPC'
-PATHDATA = 'Users/anthony/Google Drive/opteq/data'
+PATHDATA = '/Users/anthony/Google Drive/opteq/data'
 
 # get s&p 500 (spx) data
 periods=[13*5, 26*5, 52*5]
@@ -38,10 +38,10 @@ quants = [0.01, 0.02, 0.03, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50, 0.70, 0.80, 0.85
 
 def main():
     # underlying symbol
-    under = optinst.stock(_symbol=SYMBOL, _obsin=obsin, _obsout=obsout, _path=PATHDATA)
-    under.getdaily()
-    under.writedaily()
-    under.readdaily()
+    under = optinst.stock(_symbol=SYMBOL, _region='US', _path=PATHDATA)
+    under.getdaily(_dataprovider=optdata.yahoofin(), _interval='1d', _obsin=f'{obsin}d', _events='div,split', _scale=1.0)
+    under.writedaily(_dataprovider=optdata.yahoofin())
+    under.readdaily(_dataprovider=optdata.yahoofin())
     under.setidx()
 
     # common index
