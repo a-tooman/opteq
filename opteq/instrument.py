@@ -45,11 +45,11 @@ class instrument:
     def getgrp(self):
         return 'inst'
 
-    def getdaily(self, _dataprovider=optdata.yahoofin(), _interval='1d', _obsin='252d', _events='div,split', _scale=1.0):
+    def getdaily(self, _interval='1d', _obsin='252d', _events='div,split', _scale=1.0):
         '''
         desc:  get daily data from dataprovider
         '''
-        self.df = _dataprovider.getdaily(_symbol = self.symbol
+        self.df = self.dataprovider.getdaily(_symbol = self.symbol
             , _region = self.region
             , _interval = _interval
             , _obsin = _obsin
@@ -59,16 +59,24 @@ class instrument:
         return
 
     def getpath(self):
+        '''
+        desc:  get the file path and name
+        '''
         return f'{self.path}{self.dataprovider.PROVIDER}-{self.symbol}-{self.df.index.max().date()}.xlsx'
 
-    def writedaily(self, _dataprovider=optdata.yahoofin()):
-        _dataprovider.writedaily(self.df, self.symbol, self.path)
+    def writedaily(self):
+        '''
+        desc:  write df to file
+        '''
+        self.dataprovider.writedaily(self.df, self.symbol, self.path)
         return
 
-    def readdaily(self, _dataprovider=optdata.yahoofin()):
-        self.df = _dataprovider.readdaily(self.symbol, self.path)
+    def readdaily(self):
+        '''
+        desc:  read df from file
+        '''
+        self.df = self.dataprovider.readdaily(self.symbol, self.path)
         return
-
 
 class stock(instrument):
     '''
@@ -78,7 +86,8 @@ class stock(instrument):
     features = ['open', 'high', 'low', 'close', 'adjclose', 'volume']
     drop = []
 
-    def __init__(self, _symbol='^GSPC', _region='US', _path=PATHREL):
+    def __init__(self, _dataprovider=optdata.yahoofin(), _symbol='^GSPC', _region='US', _path=PATHREL):
+        self.dataprovider = _dataprovider
         self.symbol = _symbol
         self.region = _region
         self.path = _path

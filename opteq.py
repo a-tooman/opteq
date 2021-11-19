@@ -38,10 +38,10 @@ quants = [0.01, 0.02, 0.03, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50, 0.70, 0.80, 0.85
 
 def main():
     # underlying symbol
-    under = optinst.stock(_symbol=SYMBOL, _region='US', _path=PATHDATA)
-    under.getdaily(_dataprovider=optdata.yahoofin(), _interval='1d', _obsin=f'{obsin}d', _events='div,split', _scale=1.0)
-    under.writedaily(_dataprovider=optdata.yahoofin())
-    under.readdaily(_dataprovider=optdata.yahoofin())
+    under = optinst.stock(_dataprovider=optdata.yahoofin(), _symbol=SYMBOL, _region='US', _path=PATHDATA)
+    under.getdaily(_interval='1d', _obsin=f'{obsin}d', _events='div,split', _scale=1.0)
+    under.writedaily()
+    under.readdaily()
     under.setidx()
 
     # common index
