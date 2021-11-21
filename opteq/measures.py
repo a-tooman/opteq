@@ -18,10 +18,6 @@ import opteq.hurst as opthurst
 import opteq.polyfit as optfit
 #import ta
 
-
-'''
-# #### rtn methods
-'''
 class rtn:
     '''
     desc: return class

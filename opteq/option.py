@@ -8,15 +8,12 @@
 import pandas as pd
 import numpy as np
 
-
 from datetime import datetime
 import pandas_market_calendars as mcal
 import calendar
 
-
 import opteq.time as opttime
 import opteq.measures as optmeas
-
 
 class schedule(object):
     '''

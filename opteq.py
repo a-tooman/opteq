@@ -18,8 +18,8 @@ import opteq.hurst as opthurst
 import opteq.polyfit as optfit
 
 PATHREL = '/Users/anthony/Google Drive/dev/py/opteq/data'
-SYMBOL = '^GSPC'
 PATHDATA = '/Users/anthony/Google Drive/opteq/data'
+SYMBOL = '^GSPC'
 
 # get s&p 500 (spx) data
 periods=[13*5, 26*5, 52*5]
@@ -48,6 +48,7 @@ def main():
     # dependents: run, underlying
     idx = opttime.getidx(_group='idx', _df=under.df[under.symbol])
 
+    # used in option schedule
     dtestart = idx.index.min()
     dteend = idx.index.max()
 
@@ -64,8 +65,6 @@ def main():
 
     rtn.setrsi(_group='rtn', _name='c', _feature=under.df[under.symbol]['adjclose'], _length=14)
     rtn.setstats(_group='rtn', _feature='c-rsi', _prd=prd3)
-
-    # rtn.sethurst(_group='rtn', _name='c', _feature=under.df[under.symbol]['adjclose'], _prd=prdlong, _kind='price', _simplified=False, _minwindow=3, _maxwindow=prdlong)
 
     # feature: Low (l), High (h)
     rtn.setrtn(_group='rtn', _name='l', _feature1=under.df[under.symbol]['low'], _feature2=under.df[under.symbol]['adjclose'], _prd=prd1)
@@ -84,7 +83,6 @@ def main():
 
     # setpolyfit
     fit = optfit.polyfit(_group='rtn', _name='lhln^2', _df=rtn.df['rtn'], _obs=prd252)
-    #fit.corr(_df=rtn.df['rtn'], _prd=1)
     fit.runner()
     rtn.df = pd.concat([rtn.getdf(), fit.getdf()], axis=1)
 
